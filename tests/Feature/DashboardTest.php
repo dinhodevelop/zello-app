@@ -18,7 +18,17 @@ class DashboardTest extends TestCase
 
     public function test_authenticated_users_can_visit_the_dashboard()
     {
+        /** @var User $user */
         $user = User::factory()->create();
+        
+        // Criar um household e associar o usuário
+        $household = \App\Models\Household::create([
+            'name' => 'Test Household',
+            'created_by' => $user->id,
+        ]);
+        
+        $user->update(['household_id' => $household->id]);
+        
         $this->actingAs($user);
 
         $response = $this->get(route('dashboard'));
