@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { dashboard, login, register } from '../routes';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import Icon from '../components/Icon.vue';
 import { Coins, ListChecks, Home, CheckCircle } from 'lucide-vue-next';
+
+const logout = () => {
+    router.post('/logout');
+};
 </script>
 
 <template>
@@ -22,14 +26,22 @@ import { Coins, ListChecks, Home, CheckCircle } from 'lucide-vue-next';
                 
                 <!-- Auth Links -->
                 <div class="flex items-center gap-4">
-                    <Link
-                        v-if="$page.props.auth.user"
-                        :href="dashboard()"
-                        class="inline-flex items-center rounded-lg border border-[#19140035] bg-white px-6 py-2.5 text-sm font-medium text-[#1b1b18] shadow-sm transition-all hover:border-[#1915014a] hover:shadow-md dark:border-[#3E3E3A] dark:bg-[#161615] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                    >
-                        <Icon name="layout-dashboard" class="mr-2 h-4 w-4" />
-                        Dashboard
-                    </Link>
+                    <template v-if="$page.props.auth.user">
+                        <Link
+                            :href="dashboard()"
+                            class="inline-flex items-center rounded-lg border border-[#19140035] bg-white px-6 py-2.5 text-sm font-medium text-[#1b1b18] shadow-sm transition-all hover:border-[#1915014a] hover:shadow-md dark:border-[#3E3E3A] dark:bg-[#161615] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                        >
+                            <Icon name="layout-dashboard" class="mr-2 h-4 w-4" />
+                            Dashboard
+                        </Link>
+                        <button
+                            @click="logout"
+                            class="inline-flex items-center rounded-lg px-6 py-2.5 text-sm font-medium text-red-600 transition-all hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                        >
+                            <Icon name="log-out" class="mr-2 h-4 w-4" />
+                            Sair
+                        </button>
+                    </template>
                     <template v-else>
                         <Link
                             :href="login()"
