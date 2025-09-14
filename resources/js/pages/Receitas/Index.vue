@@ -3,10 +3,14 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Eye, Edit, Trash2 } from 'lucide-vue-next';
+import ViewModeToggle from '@/components/ViewModeToggle.vue';
+import ListFilters from '@/components/ListFilters.vue';
+import ReceitaCard from '@/components/ReceitaCard.vue';
+import ReceitaListItem from '@/components/ReceitaListItem.vue';
+import { useViewMode } from '@/composables/useViewMode';
+import { Plus } from 'lucide-vue-next';
+import { ref, computed } from 'vue';
 
 interface Receita {
     id: number;
@@ -22,7 +26,7 @@ interface Receita {
     updated_at: string;
 }
 
-defineProps<{
+const props = defineProps<{
     receitas: Receita[];
 }>();
 
@@ -37,62 +41,81 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-        case 'recebido':
-            return 'default';
-        case 'pendente':
-            return 'secondary';
-        default:
-            return 'secondary';
+// View mode
+const { viewMode, setViewMode } = useViewMode('receitas-view-mode');
+
+// Filters
+const searchTerm = ref('');
+const sortBy = ref('created_at');
+const sortOrder = ref<'asc' | 'desc'>('desc');
+const statusFilter = ref('all');
+const typeFilter = ref('all');
+
+// Filter options
+const statusOptions = [
+    { value: 'recebido', label: 'Recebido' },
+    { value: 'pendente', label: 'Pendente' },
+];
+
+const typeOptions = [
+    { value: 'salario', label: 'Salário' },
+    { value: 'freelance', label: 'Freelance' },
+    { value: 'rendimento', label: 'Rendimento' },
+    { value: 'outros', label: 'Outros' },
+];
+
+const sortOptions = [
+    { value: 'created_at', label: 'Data de criação' },
+    { value: 'valor', label: 'Valor' },
+    { value: 'descricao', label: 'Descrição' },
+    { value: 'data_vencimento', label: 'Vencimento' },
+];
+
+// Filtered and sorted receitas
+const filteredReceitas = computed(() => {
+    let filtered = [...props.receitas];
+
+    // Apply search filter
+    if (searchTerm.value) {
+        const search = searchTerm.value.toLowerCase();
+        filtered = filtered.filter(receita =>
+            receita.descricao.toLowerCase().includes(search) ||
+            receita.tipo.toLowerCase().includes(search)
+        );
     }
-};
 
-const getTipoBadgeVariant = (tipo: string) => {
-    switch (tipo) {
-        case 'salario':
-            return 'default';
-        case 'freelance':
-            return 'secondary';
-        case 'rendimento':
-            return 'outline';
-        default:
-            return 'outline';
+    // Apply status filter
+    if (statusFilter.value !== 'all') {
+        filtered = filtered.filter(receita => receita.status === statusFilter.value);
     }
-};
 
-const getFrequenciaBadgeVariant = (frequencia: string) => {
-    return frequencia === 'mensal' ? 'outline' : 'secondary';
-};
+    // Apply type filter
+    if (typeFilter.value !== 'all') {
+        filtered = filtered.filter(receita => receita.tipo === typeFilter.value);
+    }
 
-const formatCurrency = (value: string) => {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(parseFloat(value));
-};
+    // Apply sorting
+    filtered.sort((a, b) => {
+        let aValue: any = a[sortBy.value as keyof Receita];
+        let bValue: any = b[sortBy.value as keyof Receita];
 
-const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('pt-BR');
-};
+        if (sortBy.value === 'valor') {
+            aValue = parseFloat(a.valor);
+            bValue = parseFloat(b.valor);
+        }
 
-const getTipoLabel = (tipo: string) => {
-    const labels = {
-        'salario': 'Salário',
-        'freelance': 'Freelance',
-        'rendimento': 'Rendimento',
-        'outros': 'Outros'
-    };
-    return labels[tipo as keyof typeof labels] || tipo;
-};
+        if (aValue < bValue) return sortOrder.value === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortOrder.value === 'asc' ? 1 : -1;
+        return 0;
+    });
 
-const getFrequenciaLabel = (frequencia: string) => {
-    const labels = {
-        'mensal': 'Mensal',
-        'semanal': 'Semanal',
-        'unica': 'Única'
-    };
-    return labels[frequencia as keyof typeof labels] || frequencia;
+    return filtered;
+});
+
+const clearFilters = () => {
+    searchTerm.value = '';
+    statusFilter.value = 'all';
+    typeFilter.value = 'all';
 };
 
 const deleteReceita = (id: number) => {
@@ -106,22 +129,39 @@ const deleteReceita = (id: number) => {
     <Head title="Receitas" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
             <!-- Header -->
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 <div>
                     <h1 class="text-2xl font-bold tracking-tight">Receitas</h1>
                     <p class="text-muted-foreground">
-                        Gerencie suas receitas e rendimentos
+                        Gerencie suas receitas e rendimentos ({{ filteredReceitas.length }} {{ filteredReceitas.length === 1 ? 'item' : 'itens' }})
                     </p>
                 </div>
-                <Link href="/receitas/create">
-                    <Button>
-                        <Plus class="mr-2 h-4 w-4" />
-                        Nova Receita
-                    </Button>
-                </Link>
+                <div class="flex items-center space-x-2">
+                    <ViewModeToggle v-model="viewMode" @update:model-value="setViewMode" />
+                    <Link href="/receitas/create">
+                        <Button>
+                            <Plus class="mr-2 h-4 w-4" />
+                            Nova Receita
+                        </Button>
+                    </Link>
+                </div>
             </div>
+
+            <!-- Filters -->
+            <ListFilters
+                v-model:search-term="searchTerm"
+                v-model:sort-by="sortBy"
+                v-model:sort-order="sortOrder"
+                v-model:status-filter="statusFilter"
+                v-model:type-filter="typeFilter"
+                :status-options="statusOptions"
+                :type-options="typeOptions"
+                :sort-options="sortOptions"
+                :show-type-filter="true"
+                @clear-filters="clearFilters"
+            />
 
             <Separator />
 
@@ -141,77 +181,36 @@ const deleteReceita = (id: number) => {
                 </div>
             </div>
 
-            <div v-else class="grid gap-4">
-                <Card v-for="receita in receitas" :key="receita.id">
-                    <CardHeader class="pb-3">
-                        <div class="flex items-start justify-between">
-                            <div class="space-y-1">
-                                <CardTitle class="text-lg">{{ receita.descricao }}</CardTitle>
-                                <CardDescription>
-                                    {{ getTipoLabel(receita.tipo) }}
-                                </CardDescription>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <Badge :variant="getTipoBadgeVariant(receita.tipo)">
-                                    {{ getTipoLabel(receita.tipo) }}
-                                </Badge>
-                                <Badge :variant="getFrequenciaBadgeVariant(receita.frequencia)">
-                                    {{ getFrequenciaLabel(receita.frequencia) }}
-                                </Badge>
-                                <Badge :variant="getStatusBadgeVariant(receita.status)">
-                                    {{ receita.status === 'recebido' ? 'Recebido' : 'Pendente' }}
-                                </Badge>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <div>
-                                <p class="text-sm font-medium text-muted-foreground">Valor</p>
-                                <p class="text-lg font-semibold">{{ formatCurrency(receita.valor) }}</p>
-                            </div>
-                            <div v-if="receita.data_vencimento">
-                                <p class="text-sm font-medium text-muted-foreground">Vencimento</p>
-                                <p class="text-sm">{{ formatDate(receita.data_vencimento) }}</p>
-                            </div>
-                            <div v-if="receita.data_recebimento">
-                                <p class="text-sm font-medium text-muted-foreground">Recebimento</p>
-                                <p class="text-sm">{{ formatDate(receita.data_recebimento) }}</p>
-                            </div>
-                        </div>
+            <div v-else-if="filteredReceitas.length === 0" class="flex flex-col items-center justify-center py-12">
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold">Nenhuma receita encontrada</h3>
+                    <p class="text-muted-foreground mb-4">
+                        Tente ajustar os filtros de busca
+                    </p>
+                    <Button variant="outline" @click="clearFilters">
+                        Limpar Filtros
+                    </Button>
+                </div>
+            </div>
 
-                        <div v-if="receita.observacoes" class="mt-4">
-                            <p class="text-sm font-medium text-muted-foreground">Observações</p>
-                            <p class="text-sm">{{ receita.observacoes }}</p>
-                        </div>
+            <!-- Cards View -->
+            <div v-else-if="viewMode === 'cards'" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <ReceitaCard 
+                    v-for="receita in filteredReceitas" 
+                    :key="receita.id" 
+                    :receita="receita"
+                    @delete="deleteReceita"
+                />
+            </div>
 
-                        <Separator class="my-4" />
-
-                        <div class="flex justify-end space-x-2">
-                            <Link :href="`/receitas/${receita.id}`">
-                                <Button variant="outline" size="sm">
-                                    <Eye class="mr-2 h-4 w-4" />
-                                    Ver
-                                </Button>
-                            </Link>
-                            <Link :href="`/receitas/${receita.id}/edit`">
-                                <Button variant="outline" size="sm">
-                                    <Edit class="mr-2 h-4 w-4" />
-                                    Editar
-                                </Button>
-                            </Link>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                @click="deleteReceita(receita.id)"
-                                class="text-red-600 hover:text-red-700"
-                            >
-                                <Trash2 class="mr-2 h-4 w-4" />
-                                Excluir
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+            <!-- List View -->
+            <div v-else class="space-y-2">
+                <ReceitaListItem 
+                    v-for="receita in filteredReceitas" 
+                    :key="receita.id" 
+                    :receita="receita"
+                    @delete="deleteReceita"
+                />
             </div>
         </div>
     </AppLayout>

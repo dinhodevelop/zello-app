@@ -3,10 +3,14 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Eye, Edit, Trash2 } from 'lucide-vue-next';
+import ViewModeToggle from '../../components/ViewModeToggle.vue';
+import ListFilters from '../../components/ListFilters.vue';
+import DespesaCard from '../../components/DespesaCard.vue';
+import DespesaListItem from '../../components/DespesaListItem.vue';
+import { useViewMode } from '../../composables/useViewMode';
+import { Plus } from 'lucide-vue-next';
+import { ref, computed } from 'vue';
 
 interface Despesa {
     id: number;
@@ -23,7 +27,7 @@ interface Despesa {
     updated_at: string;
 }
 
-defineProps<{
+const props = defineProps<{
     despesas: Despesa[];
 }>();
 
@@ -38,32 +42,94 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-        case 'pago':
-            return 'default';
-        case 'pendente':
-            return 'secondary';
-        case 'vencido':
-            return 'destructive';
-        default:
-            return 'secondary';
+// View mode
+const { viewMode, setViewMode } = useViewMode('despesas-view-mode');
+
+// Filters
+const searchTerm = ref('');
+const sortBy = ref('created_at');
+const sortOrder = ref<'asc' | 'desc'>('desc');
+const statusFilter = ref('all');
+const typeFilter = ref('all');
+const categoryFilter = ref('all');
+
+// Filter options
+const statusOptions = [
+    { value: 'pago', label: 'Pago' },
+    { value: 'pendente', label: 'Pendente' },
+    { value: 'vencido', label: 'Vencido' },
+];
+
+const typeOptions = [
+    { value: 'fixa', label: 'Fixa' },
+    { value: 'variavel', label: 'Variável' },
+];
+
+// Get unique categories from despesas
+const categoryOptions = computed(() => {
+    const categories = [...new Set(props.despesas.map(d => d.categoria))];
+    return categories.map(cat => ({ value: cat, label: cat }));
+});
+
+const sortOptions = [
+    { value: 'created_at', label: 'Data de criação' },
+    { value: 'valor', label: 'Valor' },
+    { value: 'descricao', label: 'Descrição' },
+    { value: 'data_vencimento', label: 'Vencimento' },
+    { value: 'categoria', label: 'Categoria' },
+];
+
+// Filtered and sorted despesas
+const filteredDespesas = computed(() => {
+    let filtered = [...props.despesas];
+
+    // Apply search filter
+    if (searchTerm.value) {
+        const search = searchTerm.value.toLowerCase();
+        filtered = filtered.filter(despesa =>
+            despesa.descricao.toLowerCase().includes(search) ||
+            despesa.categoria.toLowerCase().includes(search)
+        );
     }
-};
 
-const getTipoBadgeVariant = (tipo: string) => {
-    return tipo === 'fixa' ? 'outline' : 'secondary';
-};
+    // Apply status filter
+    if (statusFilter.value !== 'all') {
+        filtered = filtered.filter(despesa => despesa.status === statusFilter.value);
+    }
 
-const formatCurrency = (value: string) => {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(parseFloat(value));
-};
+    // Apply type filter
+    if (typeFilter.value !== 'all') {
+        filtered = filtered.filter(despesa => despesa.tipo === typeFilter.value);
+    }
 
-const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('pt-BR');
+    // Apply category filter
+    if (categoryFilter.value !== 'all') {
+        filtered = filtered.filter(despesa => despesa.categoria === categoryFilter.value);
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+        let aValue: any = a[sortBy.value as keyof Despesa];
+        let bValue: any = b[sortBy.value as keyof Despesa];
+
+        if (sortBy.value === 'valor') {
+            aValue = parseFloat(a.valor);
+            bValue = parseFloat(b.valor);
+        }
+
+        if (aValue < bValue) return sortOrder.value === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortOrder.value === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    return filtered;
+});
+
+const clearFilters = () => {
+    searchTerm.value = '';
+    statusFilter.value = 'all';
+    typeFilter.value = 'all';
+    categoryFilter.value = 'all';
 };
 
 const deleteDespesa = (id: number) => {
@@ -77,22 +143,42 @@ const deleteDespesa = (id: number) => {
     <Head title="Despesas" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
             <!-- Header -->
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 <div>
                     <h1 class="text-2xl font-bold tracking-tight">Despesas</h1>
                     <p class="text-muted-foreground">
-                        Gerencie suas despesas e contas
+                        Gerencie suas despesas e contas ({{ filteredDespesas.length }} {{ filteredDespesas.length === 1 ? 'item' : 'itens' }})
                     </p>
                 </div>
-                <Link href="/despesas/create">
-                    <Button>
-                        <Plus class="mr-2 h-4 w-4" />
-                        Nova Despesa
-                    </Button>
-                </Link>
+                <div class="flex items-center space-x-2">
+                    <ViewModeToggle v-model="viewMode" @update:model-value="setViewMode" />
+                    <Link href="/despesas/create">
+                        <Button>
+                            <Plus class="mr-2 h-4 w-4" />
+                            Nova Despesa
+                        </Button>
+                    </Link>
+                </div>
             </div>
+
+            <!-- Filters -->
+            <ListFilters
+                v-model:search-term="searchTerm"
+                v-model:sort-by="sortBy"
+                v-model:sort-order="sortOrder"
+                v-model:status-filter="statusFilter"
+                v-model:type-filter="typeFilter"
+                v-model:category-filter="categoryFilter"
+                :status-options="statusOptions"
+                :type-options="typeOptions"
+                :category-options="categoryOptions"
+                :sort-options="sortOptions"
+                :show-type-filter="true"
+                :show-category-filter="true"
+                @clear-filters="clearFilters"
+            />
 
             <Separator />
 
@@ -112,77 +198,36 @@ const deleteDespesa = (id: number) => {
                 </div>
             </div>
 
-            <div v-else class="grid gap-4">
-                <Card v-for="despesa in despesas" :key="despesa.id">
-                    <CardHeader class="pb-3">
-                        <div class="flex items-start justify-between">
-                            <div class="space-y-1">
-                                <CardTitle class="text-lg">{{ despesa.descricao }}</CardTitle>
-                                <CardDescription>
-                                    {{ despesa.categoria }}
-                                </CardDescription>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <Badge :variant="getTipoBadgeVariant(despesa.tipo)">
-                                    {{ despesa.tipo === 'fixa' ? 'Fixa' : 'Variável' }}
-                                </Badge>
-                                <Badge :variant="getStatusBadgeVariant(despesa.status)">
-                                    {{ despesa.status === 'pago' ? 'Pago' : despesa.status === 'pendente' ? 'Pendente' : 'Vencido' }}
-                                </Badge>
-                                <Badge v-if="despesa.recorrente" variant="outline">
-                                    Recorrente
-                                </Badge>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <div>
-                                <p class="text-sm font-medium text-muted-foreground">Valor</p>
-                                <p class="text-lg font-semibold">{{ formatCurrency(despesa.valor) }}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-muted-foreground">Vencimento</p>
-                                <p class="text-sm">{{ formatDate(despesa.data_vencimento) }}</p>
-                            </div>
-                            <div v-if="despesa.data_pagamento">
-                                <p class="text-sm font-medium text-muted-foreground">Pagamento</p>
-                                <p class="text-sm">{{ formatDate(despesa.data_pagamento) }}</p>
-                            </div>
-                        </div>
+            <div v-else-if="filteredDespesas.length === 0" class="flex flex-col items-center justify-center py-12">
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold">Nenhuma despesa encontrada</h3>
+                    <p class="text-muted-foreground mb-4">
+                        Tente ajustar os filtros de busca
+                    </p>
+                    <Button variant="outline" @click="clearFilters">
+                        Limpar Filtros
+                    </Button>
+                </div>
+            </div>
 
-                        <div v-if="despesa.observacoes" class="mt-4">
-                            <p class="text-sm font-medium text-muted-foreground">Observações</p>
-                            <p class="text-sm">{{ despesa.observacoes }}</p>
-                        </div>
+            <!-- Cards View -->
+            <div v-else-if="viewMode === 'cards'" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <DespesaCard 
+                    v-for="despesa in filteredDespesas" 
+                    :key="despesa.id" 
+                    :despesa="despesa"
+                    @delete="deleteDespesa"
+                />
+            </div>
 
-                        <Separator class="my-4" />
-
-                        <div class="flex justify-end space-x-2">
-                            <Link :href="`/despesas/${despesa.id}`">
-                                <Button variant="outline" size="sm">
-                                    <Eye class="mr-2 h-4 w-4" />
-                                    Ver
-                                </Button>
-                            </Link>
-                            <Link :href="`/despesas/${despesa.id}/edit`">
-                                <Button variant="outline" size="sm">
-                                    <Edit class="mr-2 h-4 w-4" />
-                                    Editar
-                                </Button>
-                            </Link>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                @click="deleteDespesa(despesa.id)"
-                                class="text-red-600 hover:text-red-700"
-                            >
-                                <Trash2 class="mr-2 h-4 w-4" />
-                                Excluir
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+            <!-- List View -->
+            <div v-else class="space-y-2">
+                <DespesaListItem 
+                    v-for="despesa in filteredDespesas" 
+                    :key="despesa.id" 
+                    :despesa="despesa"
+                    @delete="deleteDespesa"
+                />
             </div>
         </div>
     </AppLayout>

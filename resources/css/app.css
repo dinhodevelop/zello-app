@@ -42,6 +42,28 @@
     --color-input: var(--input);
     --color-ring: var(--ring);
 
+    /* Cores Funcionais Financeiras */
+    --color-income: var(--income);
+    --color-income-foreground: var(--income-foreground);
+    --color-expense: var(--expense);
+    --color-expense-foreground: var(--expense-foreground);
+    --color-transfer: var(--transfer);
+    --color-transfer-foreground: var(--transfer-foreground);
+    --color-pending: var(--pending);
+    --color-pending-foreground: var(--pending-foreground);
+    --color-confirmed: var(--confirmed);
+    --color-confirmed-foreground: var(--confirmed-foreground);
+
+    /* Cores de Status */
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
+    --color-error: var(--error);
+    --color-error-foreground: var(--error-foreground);
+    --color-info: var(--info);
+    --color-info-foreground: var(--info-foreground);
+
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
@@ -82,79 +104,250 @@
         --font-sans:
             'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     }
+
+    /* Classes Utilitárias para Contexto Financeiro */
+    .text-income {
+        color: var(--income);
+    }
+    
+    .text-expense {
+        color: var(--expense);
+    }
+    
+    .text-transfer {
+        color: var(--transfer);
+    }
+    
+    .text-pending {
+        color: var(--pending);
+    }
+    
+    .text-confirmed {
+        color: var(--confirmed);
+    }
+
+    .bg-income {
+        background-color: var(--income);
+        color: var(--income-foreground);
+    }
+    
+    .bg-expense {
+        background-color: var(--expense);
+        color: var(--expense-foreground);
+    }
+    
+    .bg-transfer {
+        background-color: var(--transfer);
+        color: var(--transfer-foreground);
+    }
+    
+    .bg-pending {
+        background-color: var(--pending);
+        color: var(--pending-foreground);
+    }
+    
+    .bg-confirmed {
+        background-color: var(--confirmed);
+        color: var(--confirmed-foreground);
+    }
+
+    .border-income {
+        border-color: var(--income);
+    }
+    
+    .border-expense {
+        border-color: var(--expense);
+    }
+    
+    .border-transfer {
+        border-color: var(--transfer);
+    }
+    
+    .border-pending {
+        border-color: var(--pending);
+    }
+    
+    .border-confirmed {
+        border-color: var(--confirmed);
+    }
+
+    /* Classes para Status */
+    .text-success {
+        color: var(--success);
+    }
+    
+    .text-warning {
+        color: var(--warning);
+    }
+    
+    .text-error {
+        color: var(--error);
+    }
+    
+    .text-info {
+        color: var(--info);
+    }
+
+    .bg-success {
+        background-color: var(--success);
+        color: var(--success-foreground);
+    }
+    
+    .bg-warning {
+        background-color: var(--warning);
+        color: var(--warning-foreground);
+    }
+    
+    .bg-error {
+        background-color: var(--error);
+        color: var(--error-foreground);
+    }
+    
+    .bg-info {
+        background-color: var(--info);
+        color: var(--info-foreground);
+    }
+
+    /* Variantes com hover */
+    .hover\:bg-income:hover {
+        background-color: var(--income);
+        color: var(--income-foreground);
+    }
+    
+    .hover\:bg-expense:hover {
+        background-color: var(--expense);
+        color: var(--expense-foreground);
+    }
+    
+    .hover\:bg-transfer:hover {
+        background-color: var(--transfer);
+        color: var(--transfer-foreground);
+    }
 }
 
 :root {
-    --background: hsl(0 0% 100%);
-    --foreground: hsl(0 0% 3.9%);
-    --card: hsl(0 0% 100%);
-    --card-foreground: hsl(0 0% 3.9%);
+    /* Cores Principais */
+    --background: hsl(0 0% 98%); /* #fafafa */
+    --foreground: hsl(220 26% 14%); /* #111827 */
+    --card: hsl(0 0% 100%); /* #ffffff */
+    --card-foreground: hsl(220 26% 14%); /* #111827 */
     --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(0 0% 3.9%);
-    --primary: hsl(0 0% 9%);
+    --popover-foreground: hsl(220 26% 14%);
+    --primary: hsl(221 83% 53%); /* #2563eb */
     --primary-foreground: hsl(0 0% 98%);
-    --secondary: hsl(0 0% 92.1%);
-    --secondary-foreground: hsl(0 0% 9%);
-    --muted: hsl(0 0% 96.1%);
-    --muted-foreground: hsl(0 0% 45.1%);
-    --accent: hsl(0 0% 96.1%);
+    --secondary: hsl(158 64% 52%); /* #10b981 */
+    --secondary-foreground: hsl(0 0% 98%);
+    --muted: hsl(220 13% 46%); /* #6b7280 */
+    --muted-foreground: hsl(220 13% 46%);
+    --accent: hsl(43 96% 56%); /* #f59e0b */
     --accent-foreground: hsl(0 0% 9%);
-    --destructive: hsl(0 84.2% 60.2%);
+    --destructive: hsl(0 84% 60%); /* #ef4444 */
     --destructive-foreground: hsl(0 0% 98%);
-    --border: hsl(0 0% 92.8%);
-    --input: hsl(0 0% 89.8%);
-    --ring: hsl(0 0% 3.9%);
-    --chart-1: hsl(12 76% 61%);
-    --chart-2: hsl(173 58% 39%);
-    --chart-3: hsl(197 37% 24%);
-    --chart-4: hsl(43 74% 66%);
-    --chart-5: hsl(27 87% 67%);
+    --border: hsl(220 13% 91%); /* #e5e7eb */
+    --input: hsl(220 13% 91%);
+    --ring: hsl(221 83% 53%);
+    
+    /* Cores Funcionais Financeiras */
+    --income: hsl(158 64% 52%); /* #10b981 - verde receitas */
+    --income-foreground: hsl(0 0% 98%);
+    --expense: hsl(0 84% 60%); /* #ef4444 - vermelho despesas */
+    --expense-foreground: hsl(0 0% 98%);
+    --transfer: hsl(262 83% 58%); /* #8b5cf6 - roxo transferências */
+    --transfer-foreground: hsl(0 0% 98%);
+    --pending: hsl(43 96% 56%); /* #f59e0b - âmbar pendente */
+    --pending-foreground: hsl(0 0% 9%);
+    --confirmed: hsl(158 64% 52%); /* #10b981 - verde confirmado */
+    --confirmed-foreground: hsl(0 0% 98%);
+    
+    /* Cores de Status */
+    --success: hsl(142 76% 36%); /* #22c55e */
+    --success-foreground: hsl(0 0% 98%);
+    --warning: hsl(43 96% 56%); /* #f59e0b */
+    --warning-foreground: hsl(0 0% 9%);
+    --error: hsl(0 84% 60%); /* #ef4444 */
+    --error-foreground: hsl(0 0% 98%);
+    --info: hsl(217 91% 60%); /* #3b82f6 */
+    --info-foreground: hsl(0 0% 98%);
+    
+    /* Charts atualizados com paleta financeira */
+    --chart-1: hsl(158 64% 52%); /* Verde - receitas */
+    --chart-2: hsl(0 84% 60%); /* Vermelho - despesas */
+    --chart-3: hsl(262 83% 58%); /* Roxo - transferências */
+    --chart-4: hsl(43 96% 56%); /* Âmbar - pendente */
+    --chart-5: hsl(217 91% 60%); /* Azul - info */
+    
     --radius: 0.5rem;
     --sidebar-background: hsl(0 0% 98%);
-    --sidebar-foreground: hsl(240 5.3% 26.1%);
-    --sidebar-primary: hsl(0 0% 10%);
+    --sidebar-foreground: hsl(220 26% 14%);
+    --sidebar-primary: hsl(221 83% 53%);
     --sidebar-primary-foreground: hsl(0 0% 98%);
-    --sidebar-accent: hsl(0 0% 94%);
-    --sidebar-accent-foreground: hsl(0 0% 30%);
-    --sidebar-border: hsl(0 0% 91%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+    --sidebar-accent: hsl(0 0% 96%);
+    --sidebar-accent-foreground: hsl(220 26% 14%);
+    --sidebar-border: hsl(220 13% 91%);
+    --sidebar-ring: hsl(221 83% 53%);
     --sidebar: hsl(0 0% 98%);
 }
 
 .dark {
-    --background: hsl(0 0% 3.9%);
+    /* Cores Principais - Modo Escuro */
+    --background: hsl(220 26% 4%); /* Fundo escuro */
     --foreground: hsl(0 0% 98%);
-    --card: hsl(0 0% 3.9%);
+    --card: hsl(220 26% 6%);
     --card-foreground: hsl(0 0% 98%);
-    --popover: hsl(0 0% 3.9%);
+    --popover: hsl(220 26% 6%);
     --popover-foreground: hsl(0 0% 98%);
-    --primary: hsl(0 0% 98%);
-    --primary-foreground: hsl(0 0% 9%);
-    --secondary: hsl(0 0% 14.9%);
+    --primary: hsl(221 83% 53%); /* Mantém azul primário */
+    --primary-foreground: hsl(0 0% 98%);
+    --secondary: hsl(158 64% 52%); /* Mantém verde secundário */
     --secondary-foreground: hsl(0 0% 98%);
-    --muted: hsl(0 0% 16.08%);
-    --muted-foreground: hsl(0 0% 63.9%);
-    --accent: hsl(0 0% 14.9%);
-    --accent-foreground: hsl(0 0% 98%);
+    --muted: hsl(220 13% 20%);
+    --muted-foreground: hsl(220 13% 65%);
+    --accent: hsl(43 96% 56%); /* Mantém âmbar accent */
+    --accent-foreground: hsl(0 0% 9%);
     --destructive: hsl(0 84% 60%);
     --destructive-foreground: hsl(0 0% 98%);
-    --border: hsl(0 0% 14.9%);
-    --input: hsl(0 0% 14.9%);
-    --ring: hsl(0 0% 83.1%);
-    --chart-1: hsl(220 70% 50%);
-    --chart-2: hsl(160 60% 45%);
-    --chart-3: hsl(30 80% 55%);
-    --chart-4: hsl(280 65% 60%);
-    --chart-5: hsl(340 75% 55%);
-    --sidebar-background: hsl(0 0% 7%);
+    --border: hsl(220 13% 15%);
+    --input: hsl(220 13% 15%);
+    --ring: hsl(221 83% 53%);
+    
+    /* Cores Funcionais Financeiras - Modo Escuro */
+    --income: hsl(158 64% 52%); /* Verde receitas */
+    --income-foreground: hsl(0 0% 98%);
+    --expense: hsl(0 84% 60%); /* Vermelho despesas */
+    --expense-foreground: hsl(0 0% 98%);
+    --transfer: hsl(262 83% 58%); /* Roxo transferências */
+    --transfer-foreground: hsl(0 0% 98%);
+    --pending: hsl(43 96% 56%); /* Âmbar pendente */
+    --pending-foreground: hsl(0 0% 9%);
+    --confirmed: hsl(158 64% 52%); /* Verde confirmado */
+    --confirmed-foreground: hsl(0 0% 98%);
+    
+    /* Cores de Status - Modo Escuro */
+    --success: hsl(142 76% 36%);
+    --success-foreground: hsl(0 0% 98%);
+    --warning: hsl(43 96% 56%);
+    --warning-foreground: hsl(0 0% 9%);
+    --error: hsl(0 84% 60%);
+    --error-foreground: hsl(0 0% 98%);
+    --info: hsl(217 91% 60%);
+    --info-foreground: hsl(0 0% 98%);
+    
+    /* Charts - Modo Escuro */
+    --chart-1: hsl(158 64% 52%); /* Verde - receitas */
+    --chart-2: hsl(0 84% 60%); /* Vermelho - despesas */
+    --chart-3: hsl(262 83% 58%); /* Roxo - transferências */
+    --chart-4: hsl(43 96% 56%); /* Âmbar - pendente */
+    --chart-5: hsl(217 91% 60%); /* Azul - info */
+    
+    --sidebar-background: hsl(220 26% 6%);
     --sidebar-foreground: hsl(0 0% 95.9%);
-    --sidebar-primary: hsl(360, 100%, 100%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(0 0% 15.9%);
+    --sidebar-primary: hsl(221 83% 53%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(220 13% 15%);
     --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-border: hsl(0 0% 15.9%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-    --sidebar: hsl(240 5.9% 10%);
+    --sidebar-border: hsl(220 13% 15%);
+    --sidebar-ring: hsl(221 83% 53%);
+    --sidebar: hsl(220 26% 6%);
 }
 
 @layer base {

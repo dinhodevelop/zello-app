@@ -81,9 +81,9 @@ const formatDate = (date: string) => {
 };
 
 const getSaldoColor = computed(() => {
-    if (props.resumo.saldo > 0) return 'text-green-600';
-    if (props.resumo.saldo < 0) return 'text-red-600';
-    return 'text-gray-600';
+    if (props.resumo.saldo > 0) return 'text-income';
+    if (props.resumo.saldo < 0) return 'text-expense';
+    return 'text-muted-foreground';
 });
 
 const applyFilters = () => {
@@ -203,18 +203,18 @@ const clearFilters = () => {
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle class="text-sm font-medium">Receitas</CardTitle>
-                        <TrendingUp class="h-4 w-4 text-muted-foreground" />
+                        <TrendingUp class="h-4 w-4 text-income" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ formatCurrency(resumo.total_receitas) }}</div>
+                        <div class="text-2xl font-bold text-income">{{ formatCurrency(resumo.total_receitas) }}</div>
                         <p class="text-xs text-muted-foreground">
-                            Recebidas: {{ formatCurrency(resumo.receitas_recebidas) }}
+                            Recebidas: <span class="text-confirmed">{{ formatCurrency(resumo.receitas_recebidas) }}</span>
                         </p>
                         <p class="text-xs text-muted-foreground">
-                            Pendentes: {{ formatCurrency(resumo.receitas_pendentes) }}
+                            Pendentes: <span class="text-pending">{{ formatCurrency(resumo.receitas_pendentes) }}</span>
                         </p>
                         <Link href="/receitas" class="mt-3 block">
-                            <Button variant="outline" size="sm" class="w-full">
+                            <Button variant="outline" size="sm" class="w-full hover:bg-income hover:text-white">
                                 <Receipt class="mr-2 h-4 w-4" />
                                 Ver Receitas
                             </Button>
@@ -226,18 +226,18 @@ const clearFilters = () => {
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle class="text-sm font-medium">Despesas</CardTitle>
-                        <TrendingDown class="h-4 w-4 text-muted-foreground" />
+                        <TrendingDown class="h-4 w-4 text-expense" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ formatCurrency(resumo.total_despesas) }}</div>
+                        <div class="text-2xl font-bold text-expense">{{ formatCurrency(resumo.total_despesas) }}</div>
                         <p class="text-xs text-muted-foreground">
-                            Pagas: {{ formatCurrency(resumo.despesas_pagas) }}
+                            Pagas: <span class="text-confirmed">{{ formatCurrency(resumo.despesas_pagas) }}</span>
                         </p>
                         <p class="text-xs text-muted-foreground">
-                            Pendentes: {{ formatCurrency(resumo.despesas_pendentes) }}
+                            Pendentes: <span class="text-pending">{{ formatCurrency(resumo.despesas_pendentes) }}</span>
                         </p>
                         <Link href="/despesas" class="mt-3 block">
-                            <Button variant="outline" size="sm" class="w-full">
+                            <Button variant="outline" size="sm" class="w-full hover:bg-expense hover:text-white">
                                 <CreditCard class="mr-2 h-4 w-4" />
                                 Ver Despesas
                             </Button>
@@ -249,8 +249,8 @@ const clearFilters = () => {
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle class="text-sm font-medium">Saldo</CardTitle>
-                        <TrendingUp v-if="resumo.saldo >= 0" class="h-4 w-4 text-green-600" />
-                        <TrendingDown v-else class="h-4 w-4 text-red-600" />
+                        <TrendingUp v-if="resumo.saldo >= 0" class="h-4 w-4 text-income" />
+                        <TrendingDown v-else class="h-4 w-4 text-expense" />
                     </CardHeader>
                     <CardContent>
                         <div class="text-2xl font-bold" :class="getSaldoColor">
@@ -260,10 +260,10 @@ const clearFilters = () => {
                             Receitas - Despesas
                         </p>
                         <div class="mt-2">
-                            <Badge v-if="resumo.saldo > 0" variant="default">
+                            <Badge v-if="resumo.saldo > 0" class="bg-success text-success-foreground">
                                 Positivo
                             </Badge>
-                            <Badge v-else-if="resumo.saldo < 0" variant="destructive">
+                            <Badge v-else-if="resumo.saldo < 0" class="bg-error text-error-foreground">
                                 Negativo
                             </Badge>
                             <Badge v-else variant="secondary">
@@ -274,19 +274,19 @@ const clearFilters = () => {
                 </Card>
 
                 <!-- Despesas Vencidas -->
-                <Card v-if="resumo.despesas_vencidas > 0">
+                <Card v-if="resumo.despesas_vencidas > 0" class="border-error">
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle class="text-sm font-medium">Vencidas</CardTitle>
-                        <TrendingDown class="h-4 w-4 text-red-600" />
+                        <TrendingDown class="h-4 w-4 text-error" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold text-red-600">
+                        <div class="text-2xl font-bold text-error">
                             {{ formatCurrency(resumo.despesas_vencidas) }}
                         </div>
                         <p class="text-xs text-muted-foreground">
                             Despesas vencidas
                         </p>
-                        <Badge variant="destructive" class="mt-2">
+                        <Badge class="bg-error text-error-foreground mt-2">
                             Atenção Necessária
                         </Badge>
                     </CardContent>
@@ -329,10 +329,10 @@ const clearFilters = () => {
                                     </p>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    <Badge :variant="receita.status === 'recebido' ? 'default' : 'secondary'">
+                                    <Badge :class="receita.status === 'recebido' ? 'bg-confirmed text-confirmed-foreground' : 'bg-pending text-pending-foreground'">
                                         {{ receita.status === 'recebido' ? 'Recebido' : 'Pendente' }}
                                     </Badge>
-                                    <span class="font-semibold">{{ formatCurrency(parseFloat(receita.valor)) }}</span>
+                                    <span class="font-semibold text-income">{{ formatCurrency(parseFloat(receita.valor)) }}</span>
                                     <Link :href="`/receitas/${receita.id}`">
                                         <Button variant="outline" size="sm">
                                             <Eye class="h-4 w-4" />
@@ -389,7 +389,7 @@ const clearFilters = () => {
                                     <Badge variant="secondary">
                                         {{ despesa.categoria }}
                                     </Badge>
-                                    <span class="font-semibold">{{ formatCurrency(parseFloat(despesa.valor)) }}</span>
+                                    <span class="font-semibold text-expense">{{ formatCurrency(parseFloat(despesa.valor)) }}</span>
                                     <Link :href="`/despesas/${despesa.id}`">
                                         <Button variant="outline" size="sm">
                                             <Eye class="h-4 w-4" />

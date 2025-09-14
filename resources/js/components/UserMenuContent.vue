@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import UserInfo from '@/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import ThemeToggle from '@/components/ThemeToggle.vue';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import type { User } from '@/types';
@@ -32,6 +33,15 @@ defineProps<Props>();
                 Settings
             </Link>
         </DropdownMenuItem>
+    </DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuGroup>
+        <div class="px-2 py-1.5">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Tema</span>
+                <ThemeToggle variant="icon" :show-tooltip="false" />
+            </div>
+        </div>
     </DropdownMenuGroup>
     <DropdownMenuSeparator />
     <DropdownMenuItem :as-child="true">
