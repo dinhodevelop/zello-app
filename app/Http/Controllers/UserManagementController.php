@@ -124,13 +124,33 @@ class UserManagementController extends Controller
             ->with('success', $user->name . ' foi movido para o lar "' . $targetHousehold->name . '"');
     }
 
+    public function updateRole(Request $request, User $user)
+    {
+        // Verifica permissões usando Policy
+        $this->authorize('updateRole', $user);
+
+        $request->validate([
+            'role' => 'required|in:admin,user'
+        ]);
+
+        $oldRole = $user->role;
+        $newRole = $request->role;
+
+        $user->update(['role' => $newRole]);
+
+        $roleNames = [
+            'admin' => 'Administrador',
+            'user' => 'Usuário'
+        ];
+
+        return redirect()->back()
+            ->with('success', 'Role de ' . $user->name . ' alterada para ' . $roleNames[$newRole] . ' com sucesso.');
+    }
+
     public function destroy(User $user)
     {
-        // Não permite excluir o usuário logado
-        if ($user->id === Auth::id()) {
-            return redirect()->back()
-                ->with('error', 'Você não pode excluir sua própria conta.');
-        }
+        // Verifica permissões usando Policy
+        $this->authorize('delete', $user);
 
         // Não permite excluir criadores de lares
         $isCreator = Household::where('created_by', $user->id)->exists();

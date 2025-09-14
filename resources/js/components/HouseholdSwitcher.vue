@@ -54,7 +54,7 @@
                     </Link>
                 </DropdownMenuItem>
                 
-                <template v-if="currentHousehold">
+                <template v-if="currentHousehold && user.value?.role === 'admin'">
                     <DropdownMenuSeparator />
                     
                     <DropdownMenuItem as-child>

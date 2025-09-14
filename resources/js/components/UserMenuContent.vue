@@ -28,7 +28,7 @@ defineProps<Props>();
     </DropdownMenuLabel>
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
-        <DropdownMenuItem :as-child="true">
+        <DropdownMenuItem v-if="user.role === 'admin'" :as-child="true">
             <Link class="block w-full" :href="householdIndex().url" prefetch as="button">
                 <Home class="mr-2 h-4 w-4" />
                 Configurações do Lar

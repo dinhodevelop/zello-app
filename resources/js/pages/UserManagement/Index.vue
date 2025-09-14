@@ -60,17 +60,34 @@
                                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                                 {{ member.email }}
                                             </p>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <Badge :variant="member.role === 'admin' ? 'default' : 'secondary'" class="text-xs">
+                                                    {{ member.role === 'admin' ? 'Admin' : 'Usuário' }}
+                                                </Badge>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="flex gap-2">
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex gap-2">
+                                        <Button 
+                                            variant="outline" 
+                                            size="sm"
+                                            @click="changeRole(member)"
+                                            :disabled="member.id === $page.props.auth.user.id"
+                                            class="flex-1"
+                                        >
+                                            <Shield class="w-4 h-4 mr-1" />
+                                            {{ member.role === 'admin' ? 'Remover Admin' : 'Tornar Admin' }}
+                                        </Button>
+                                    </div>
                                     <Button 
                                         variant="outline" 
                                         size="sm"
                                         @click="removeMember(member)"
                                         :disabled="member.id === household.created_by || member.id === $page.props.auth.user.id"
-                                        class="flex-1"
+                                        class="w-full"
                                     >
                                         <UserMinus class="w-4 h-4 mr-1" />
                                         Remover
@@ -126,26 +143,40 @@
                                             <p v-else class="text-xs text-green-600 dark:text-green-400">
                                                 Sem lar
                                             </p>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <Badge :variant="user.role === 'admin' ? 'default' : 'secondary'" class="text-xs">
+                                                    {{ user.role === 'admin' ? 'Admin' : 'Usuário' }}
+                                                </Badge>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="flex gap-2">
-                                    <Button 
-                                        size="sm"
-                                        @click="addMember(user)"
-                                        class="flex-1"
-                                    >
-                                        <UserPlus class="w-4 h-4 mr-1" />
-                                        Adicionar
-                                    </Button>
-                                    <Button 
-                                        variant="destructive" 
-                                        size="sm"
-                                        @click="deleteUser(user)"
-                                    >
-                                        <Trash2 class="w-4 h-4" />
-                                    </Button>
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex gap-2">
+                                        <Button 
+                                            size="sm"
+                                            @click="addMember(user)"
+                                            class="flex-1"
+                                        >
+                                            <UserPlus class="w-4 h-4 mr-1" />
+                                            Adicionar
+                                        </Button>
+                                        <Button 
+                                            variant="outline" 
+                                            size="sm"
+                                            @click="changeRole(user)"
+                                        >
+                                            <Shield class="w-4 h-4" />
+                                        </Button>
+                                        <Button 
+                                            variant="destructive" 
+                                            size="sm"
+                                            @click="deleteUser(user)"
+                                        >
+                                            <Trash2 class="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -187,14 +218,16 @@ import { ref } from 'vue'
 import { router, Link, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { UserPlus, UserMinus, Users, Trash2 } from 'lucide-vue-next'
+import { UserPlus, UserMinus, Users, Trash2, Shield } from 'lucide-vue-next'
 import { create as userManagementCreate } from '@/routes/user-management'
 
 interface User {
     id: number
     name: string
     email: string
+    role: 'admin' | 'user'
     household?: { name: string }
 }
 
@@ -266,6 +299,31 @@ const deleteUser = (user: User) => {
         type: 'delete',
         action: () => {
             router.delete(`/user-management/${user.id}`, {
+                onStart: () => processing.value = true,
+                onFinish: () => {
+                    processing.value = false
+                    showConfirmModal.value = false
+                }
+            })
+        }
+    }
+    showConfirmModal.value = true
+}
+
+const changeRole = (user: User) => {
+    const newRole = user.role === 'admin' ? 'user' : 'admin'
+    const roleNames = {
+        admin: 'Administrador',
+        user: 'Usuário'
+    }
+    
+    confirmAction.value = {
+        title: 'Alterar Role',
+        message: `Deseja alterar a role de ${user.name} para ${roleNames[newRole]}?`,
+        confirmText: 'Alterar',
+        type: 'default',
+        action: () => {
+            router.patch(`/user-management/${user.id}/role`, { role: newRole }, {
                 onStart: () => processing.value = true,
                 onFinish: () => {
                     processing.value = false

@@ -21,6 +21,11 @@ class DespesaPolicy
      */
     public function view(User $user, Despesa $despesa): bool
     {
+        // Admin pode ver tudo
+        if ($user->isAdmin()) {
+            return true;
+        }
+
         // Permite visualizar se for o criador, responsável ou do mesmo household
         return $user->id === $despesa->user_id || 
                $user->id === $despesa->created_by || 
@@ -41,6 +46,11 @@ class DespesaPolicy
      */
     public function update(User $user, Despesa $despesa): bool
     {
+        // Admin pode editar tudo
+        if ($user->isAdmin()) {
+            return true;
+        }
+
         // Permite editar se for o criador ou responsável
         return $user->id === $despesa->user_id || 
                $user->id === $despesa->created_by || 
@@ -52,6 +62,11 @@ class DespesaPolicy
      */
     public function delete(User $user, Despesa $despesa): bool
     {
+        // Admin pode deletar tudo
+        if ($user->isAdmin()) {
+            return true;
+        }
+
         // Permite deletar apenas se for o criador
         return $user->id === $despesa->created_by || $user->id === $despesa->user_id;
     }

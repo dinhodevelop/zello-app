@@ -5,32 +5,44 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { dashboard } from '../routes';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {  LayoutGrid, TrendingUp, TrendingDown, Users } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { computed } from 'vue';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Receitas',
-        href: '/receitas',
-        icon: TrendingUp,
-    },
-    {
-        title: 'Despesas',
-        href: '/despesas',
-        icon: TrendingDown,
-    },
-    {
-        title: 'Gerenciar Usuários',
-        href: '/user-management',
-        icon: Users,
-    },
-];
+const page = usePage();
+const user = computed(() => (page.props as any).auth?.user);
+
+const mainNavItems = computed((): NavItem[] => {
+    const baseItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Receitas',
+            href: '/receitas',
+            icon: TrendingUp,
+        },
+        {
+            title: 'Despesas',
+            href: '/despesas',
+            icon: TrendingDown,
+        },
+    ];
+
+    // Apenas admins podem ver o gerenciamento de usuários
+    if (user.value?.role === 'admin') {
+        baseItems.push({
+            title: 'Gerenciar Usuários',
+            href: '/user-management',
+            icon: Users,
+        });
+    }
+
+    return baseItems;
+});
 
 const footerNavItems: NavItem[] = [
 

@@ -32,8 +32,13 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    role: 'admin' | 'user';
     avatar?: string;
     email_verified_at: string | null;
+    household?: {
+        id: number;
+        name: string;
+    };
     created_at: string;
     updated_at: string;
 }

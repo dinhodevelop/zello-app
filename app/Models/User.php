@@ -24,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
         'household_id',
     ];
 
@@ -63,5 +64,37 @@ class User extends Authenticatable
     public function household(): BelongsTo
     {
         return $this->belongsTo(Household::class);
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is regular user
+     */
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
+    }
+
+    /**
+     * Check if user can manage users
+     */
+    public function canManageUsers(): bool
+    {
+        return $this->isAdmin();
+    }
+
+    /**
+     * Check if user can manage households
+     */
+    public function canManageHouseholds(): bool
+    {
+        return $this->isAdmin();
     }
 }

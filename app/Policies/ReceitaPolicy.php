@@ -21,6 +21,11 @@ class ReceitaPolicy
      */
     public function view(User $user, Receita $receita): bool
     {
+        // Admin pode ver tudo
+        if ($user->isAdmin()) {
+            return true;
+        }
+
         // Permite visualizar se for o criador, responsável ou do mesmo household
         return $user->id === $receita->user_id || 
                $user->id === $receita->created_by || 
@@ -41,6 +46,11 @@ class ReceitaPolicy
      */
     public function update(User $user, Receita $receita): bool
     {
+        // Admin pode editar tudo
+        if ($user->isAdmin()) {
+            return true;
+        }
+
         // Permite editar se for o criador ou responsável
         return $user->id === $receita->user_id || 
                $user->id === $receita->created_by || 
@@ -52,6 +62,11 @@ class ReceitaPolicy
      */
     public function delete(User $user, Receita $receita): bool
     {
+        // Admin pode deletar tudo
+        if ($user->isAdmin()) {
+            return true;
+        }
+
         // Permite deletar apenas se for o criador
         return $user->id === $receita->created_by || $user->id === $receita->user_id;
     }
