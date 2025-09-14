@@ -17,7 +17,8 @@ class DespesaController extends Controller
      */
     public function index(): Response
     {
-        $despesas = Auth::user()->despesas()
+        $despesas = Despesa::forCurrentHousehold()
+            ->with(['creator', 'responsibleUser'])
             ->orderBy('data_vencimento', 'asc')
             ->get();
 
@@ -31,7 +32,11 @@ class DespesaController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Despesas/Create');
+        $householdUsers = Auth::user()->household->users ?? collect();
+        
+        return Inertia::render('Despesas/Create', [
+            'householdUsers' => $householdUsers
+        ]);
     }
 
     /**
@@ -49,9 +54,16 @@ class DespesaController extends Controller
             'data_vencimento' => 'required|date',
             'recorrente' => 'boolean',
             'observacoes' => 'nullable|string',
+            'responsible_user_id' => 'nullable|exists:users,id',
         ]);
 
-        Auth::user()->despesas()->create($validated);
+        $despesaData = array_merge($validated, [
+            'user_id' => Auth::id(),
+            'created_by' => Auth::id(),
+            'responsible_user_id' => $validated['responsible_user_id'] ?? Auth::id(),
+        ]);
+
+        Despesa::create($despesaData);
 
         return redirect()->route('despesas.index')
             ->with('success', 'Despesa criada com sucesso!');
@@ -63,6 +75,8 @@ class DespesaController extends Controller
     public function show(Despesa $despesa): Response
     {
         $this->authorize('view', $despesa);
+
+        $despesa->load(['creator', 'responsibleUser']);
 
         return Inertia::render('Despesas/Show', [
             'despesa' => $despesa
@@ -76,8 +90,12 @@ class DespesaController extends Controller
     {
         $this->authorize('update', $despesa);
 
+        $householdUsers = Auth::user()->household->users ?? collect();
+        $despesa->load(['creator', 'responsibleUser']);
+
         return Inertia::render('Despesas/Edit', [
-            'despesa' => $despesa
+            'despesa' => $despesa,
+            'householdUsers' => $householdUsers
         ]);
     }
 
@@ -98,6 +116,7 @@ class DespesaController extends Controller
             'data_vencimento' => 'required|date',
             'recorrente' => 'boolean',
             'observacoes' => 'nullable|string',
+            'responsible_user_id' => 'nullable|exists:users,id',
         ]);
 
         $despesa->update($validated);

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import UserInfo from '@/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import ThemeToggle from '@/components/ThemeToggle.vue';
-import { logout } from '@/routes';
-import { edit } from '@/routes/profile';
+import ThemeToggle from './ThemeToggle.vue';
+import { logout } from '../routes';
+import { edit } from '../routes/profile';
+import { index as householdIndex } from '../routes/household';
 import type { User } from '@/types';
 import { Link, router } from '@inertiajs/vue3';
-import { LogOut, Settings } from 'lucide-vue-next';
+import { LogOut, Settings, Home } from 'lucide-vue-next';
 
 interface Props {
     user: User;
@@ -28,9 +29,15 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
+            <Link class="block w-full" :href="householdIndex().url" prefetch as="button">
+                <Home class="mr-2 h-4 w-4" />
+                Configurações do Lar
+            </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem :as-child="true">
             <Link class="block w-full" :href="edit()" prefetch as="button">
                 <Settings class="mr-2 h-4 w-4" />
-                Settings
+                Perfil
             </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>

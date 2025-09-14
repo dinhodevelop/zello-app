@@ -25,25 +25,25 @@ class DashboardController extends Controller
         [$startDate, $endDate] = $this->getDateRange($periodo, $dataInicio, $dataFim);
         
         // Buscar receitas do período
-        $receitasQuery = $user->receitas();
+        $receitasQuery = Receita::forCurrentHousehold();
         if ($startDate && $endDate) {
             $receitasQuery->whereBetween('created_at', [$startDate, $endDate]);
         }
         
         $receitas = $receitasQuery->get();
-        $receitasRecentes = $user->receitas()
+        $receitasRecentes = Receita::forCurrentHousehold()
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
         
         // Buscar despesas do período
-        $despesasQuery = $user->despesas();
+        $despesasQuery = Despesa::forCurrentHousehold();
         if ($startDate && $endDate) {
             $despesasQuery->whereBetween('created_at', [$startDate, $endDate]);
         }
         
         $despesas = $despesasQuery->get();
-        $despesasPendentes = $user->despesas()
+        $despesasPendentes = Despesa::forCurrentHousehold()
             ->where('status', 'pendente')
             ->orderBy('data_vencimento', 'asc')
             ->limit(5)
@@ -83,7 +83,7 @@ class DashboardController extends Controller
             })->values();
         
         // Dados para gráfico mensal (últimos 6 meses)
-        $dadosGrafico = $this->getDadosGraficoMensal($user);
+        $dadosGrafico = $this->getDadosGraficoMensal();
         
         return Inertia::render('Dashboard', [
             'filtros' => [
@@ -169,7 +169,7 @@ class DashboardController extends Controller
         }
     }
     
-    private function getDadosGraficoMensal($user): array
+    private function getDadosGraficoMensal(): array
     {
         $dados = [];
         
@@ -178,11 +178,11 @@ class DashboardController extends Controller
             $inicioMes = $mes->copy()->startOfMonth();
             $fimMes = $mes->copy()->endOfMonth();
             
-            $receitasMes = $user->receitas()
+            $receitasMes = Receita::forCurrentHousehold()
                 ->whereBetween('created_at', [$inicioMes, $fimMes])
                 ->sum('valor');
                 
-            $despesasMes = $user->despesas()
+            $despesasMes = Despesa::forCurrentHousehold()
                 ->whereBetween('created_at', [$inicioMes, $fimMes])
                 ->sum('valor');
             

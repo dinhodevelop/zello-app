@@ -18,7 +18,8 @@ class ReceitaController extends Controller
      */
     public function index(): Response
     {
-        $receitas = Auth::user()->receitas()
+        $receitas = Receita::forCurrentHousehold()
+            ->with(['creator', 'responsibleUser'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -32,7 +33,11 @@ class ReceitaController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Receitas/Create');
+        $householdUsers = Auth::user()->household->users ?? collect();
+        
+        return Inertia::render('Receitas/Create', [
+            'householdUsers' => $householdUsers
+        ]);
     }
 
     /**
@@ -49,9 +54,16 @@ class ReceitaController extends Controller
             'data_recebimento' => 'nullable|date',
             'data_vencimento' => 'nullable|date',
             'observacoes' => 'nullable|string',
+            'responsible_user_id' => 'nullable|exists:users,id',
         ]);
 
-        Auth::user()->receitas()->create($validated);
+        $receitaData = array_merge($validated, [
+            'user_id' => Auth::id(),
+            'created_by' => Auth::id(),
+            'responsible_user_id' => $validated['responsible_user_id'] ?? Auth::id(),
+        ]);
+
+        Receita::create($receitaData);
 
         return redirect()->route('receitas.index')
             ->with('success', 'Receita criada com sucesso!');
@@ -63,6 +75,8 @@ class ReceitaController extends Controller
     public function show(Receita $receita): Response
     {
         $this->authorize('view', $receita);
+
+        $receita->load(['creator', 'responsibleUser']);
 
         return Inertia::render('Receitas/Show', [
             'receita' => $receita
@@ -76,8 +90,12 @@ class ReceitaController extends Controller
     {
         $this->authorize('update', $receita);
 
+        $householdUsers = Auth::user()->household->users ?? collect();
+        $receita->load(['creator', 'responsibleUser']);
+
         return Inertia::render('Receitas/Edit', [
-            'receita' => $receita
+            'receita' => $receita,
+            'householdUsers' => $householdUsers
         ]);
     }
 
@@ -97,6 +115,7 @@ class ReceitaController extends Controller
             'data_recebimento' => 'nullable|date',
             'data_vencimento' => 'nullable|date',
             'observacoes' => 'nullable|string',
+            'responsible_user_id' => 'nullable|exists:users,id',
         ]);
 
         $receita->update($validated);

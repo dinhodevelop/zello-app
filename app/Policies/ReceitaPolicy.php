@@ -21,7 +21,11 @@ class ReceitaPolicy
      */
     public function view(User $user, Receita $receita): bool
     {
-        return $user->id === $receita->user_id;
+        // Permite visualizar se for o criador, responsável ou do mesmo household
+        return $user->id === $receita->user_id || 
+               $user->id === $receita->created_by || 
+               $user->id === $receita->responsible_user_id ||
+               ($user->household_id && $user->household_id === $receita->household_id);
     }
 
     /**
@@ -37,7 +41,10 @@ class ReceitaPolicy
      */
     public function update(User $user, Receita $receita): bool
     {
-        return $user->id === $receita->user_id;
+        // Permite editar se for o criador ou responsável
+        return $user->id === $receita->user_id || 
+               $user->id === $receita->created_by || 
+               $user->id === $receita->responsible_user_id;
     }
 
     /**
@@ -45,7 +52,8 @@ class ReceitaPolicy
      */
     public function delete(User $user, Receita $receita): bool
     {
-        return $user->id === $receita->user_id;
+        // Permite deletar apenas se for o criador
+        return $user->id === $receita->created_by || $user->id === $receita->user_id;
     }
 
     /**

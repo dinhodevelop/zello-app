@@ -4,7 +4,8 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Separator } from './ui/separator';
 import { Link } from '@inertiajs/vue3';
-import { Eye, Edit, Trash2, Calendar, DollarSign, Clock, CheckCircle, AlertTriangle, Repeat } from 'lucide-vue-next';
+import { Eye, Edit, Trash2, Calendar, DollarSign, Clock, CheckCircle, AlertTriangle, Repeat, User as UserIcon, UserCheck } from 'lucide-vue-next';
+import type { User } from '../types';
 
 interface Despesa {
     id: number;
@@ -17,6 +18,8 @@ interface Despesa {
     data_vencimento: string;
     recorrente: boolean;
     observacoes: string | null;
+    creator?: User;
+    responsible_user?: User;
     created_at: string;
     updated_at: string;
 }
@@ -165,6 +168,25 @@ const handleDelete = () => {
                         <span class="text-sm font-medium">Pagamento</span>
                     </div>
                     <span class="text-sm">{{ formatDate(despesa.data_pagamento) }}</span>
+                </div>
+            </div>
+
+            <!-- Informações de Autoria -->
+            <div class="grid grid-cols-1 gap-2 mb-4">
+                <div v-if="despesa.creator" class="flex items-center justify-between p-2 bg-muted/20 rounded-md">
+                    <div class="flex items-center space-x-2">
+                        <UserIcon class="h-4 w-4 text-muted-foreground" />
+                        <span class="text-sm font-medium">Criado por</span>
+                    </div>
+                    <span class="text-sm">{{ despesa.creator.name }}</span>
+                </div>
+                
+                <div v-if="despesa.responsible_user" class="flex items-center justify-between p-2 bg-muted/20 rounded-md">
+                    <div class="flex items-center space-x-2">
+                        <UserCheck class="h-4 w-4 text-muted-foreground" />
+                        <span class="text-sm font-medium">Responsável</span>
+                    </div>
+                    <span class="text-sm">{{ despesa.responsible_user.name }}</span>
                 </div>
             </div>
 

@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Link } from '@inertiajs/vue3';
-import { Eye, Edit, Trash2, Calendar, DollarSign, Clock, CheckCircle } from 'lucide-vue-next';
+import { Eye, Edit, Trash2, Calendar, DollarSign, Clock, CheckCircle, User as UserIcon, UserCheck } from 'lucide-vue-next';
+import type { User } from '../types';
 
 interface Receita {
     id: number;
@@ -16,6 +17,8 @@ interface Receita {
     data_recebimento: string | null;
     data_vencimento: string | null;
     observacoes: string | null;
+    creator?: User;
+    responsible_user?: User;
     created_at: string;
     updated_at: string;
 }
@@ -124,6 +127,25 @@ const handleDelete = () => {
                         <span class="text-sm font-medium">Recebimento</span>
                     </div>
                     <span class="text-sm">{{ formatDate(receita.data_recebimento) }}</span>
+                </div>
+            </div>
+
+            <!-- Informações de Autoria -->
+            <div class="grid grid-cols-1 gap-2 mb-4">
+                <div v-if="receita.creator" class="flex items-center justify-between p-2 bg-muted/20 rounded-md">
+                    <div class="flex items-center space-x-2">
+                        <UserIcon class="h-4 w-4 text-muted-foreground" />
+                        <span class="text-sm font-medium">Criado por</span>
+                    </div>
+                    <span class="text-sm">{{ receita.creator.name }}</span>
+                </div>
+                
+                <div v-if="receita.responsible_user" class="flex items-center justify-between p-2 bg-muted/20 rounded-md">
+                    <div class="flex items-center space-x-2">
+                        <UserCheck class="h-4 w-4 text-muted-foreground" />
+                        <span class="text-sm font-medium">Responsável</span>
+                    </div>
+                    <span class="text-sm">{{ receita.responsible_user.name }}</span>
                 </div>
             </div>
 

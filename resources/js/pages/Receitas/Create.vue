@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type User } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+interface Props {
+    householdUsers?: User[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    householdUsers: () => [],
+});
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -32,6 +41,7 @@ const form = useForm({
     data_recebimento: '',
     data_vencimento: '',
     observacoes: '',
+    responsible_user_id: '',
 });
 
 const tiposReceita = [
@@ -139,6 +149,29 @@ const submit = () => {
                                         {{ form.errors.frequencia }}
                                     </p>
                                 </div>
+                            </div>
+
+                            <!-- Responsável -->
+                            <div class="space-y-2">
+                                <Label for="responsible_user_id">Responsável</Label>
+                                <Select v-model="form.responsible_user_id">
+                                    <SelectTrigger :class="{ 'border-red-500': form.errors.responsible_user_id }">
+                                        <SelectValue placeholder="Selecione o responsável (padrão: você)" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="">Eu sou o responsável</SelectItem>
+                                        <SelectItem 
+                                            v-for="user in props.householdUsers" 
+                                            :key="user.id" 
+                                            :value="user.id.toString()"
+                                        >
+                                            {{ user.name }}
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <p v-if="form.errors.responsible_user_id" class="text-sm text-red-500">
+                                    {{ form.errors.responsible_user_id }}
+                                </p>
                             </div>
 
                             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">

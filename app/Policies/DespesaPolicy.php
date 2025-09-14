@@ -21,7 +21,11 @@ class DespesaPolicy
      */
     public function view(User $user, Despesa $despesa): bool
     {
-        return $user->id === $despesa->user_id;
+        // Permite visualizar se for o criador, responsável ou do mesmo household
+        return $user->id === $despesa->user_id || 
+               $user->id === $despesa->created_by || 
+               $user->id === $despesa->responsible_user_id ||
+               ($user->household_id && $user->household_id === $despesa->household_id);
     }
 
     /**
@@ -37,7 +41,10 @@ class DespesaPolicy
      */
     public function update(User $user, Despesa $despesa): bool
     {
-        return $user->id === $despesa->user_id;
+        // Permite editar se for o criador ou responsável
+        return $user->id === $despesa->user_id || 
+               $user->id === $despesa->created_by || 
+               $user->id === $despesa->responsible_user_id;
     }
 
     /**
@@ -45,7 +52,8 @@ class DespesaPolicy
      */
     public function delete(User $user, Despesa $despesa): bool
     {
-        return $user->id === $despesa->user_id;
+        // Permite deletar apenas se for o criador
+        return $user->id === $despesa->created_by || $user->id === $despesa->user_id;
     }
 
     /**
