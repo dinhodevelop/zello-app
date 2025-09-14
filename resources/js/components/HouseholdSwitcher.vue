@@ -79,18 +79,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePage, Link, router } from '@inertiajs/vue3'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu'
+import { Button } from '../components/ui/button'
 import { Home, ChevronDown, Check, Plus, Settings, Users, UserPlus } from 'lucide-vue-next'
-import { index as householdIndex, create as householdCreate, available as householdAvailable } from '@/routes/household'
-import { index as userManagementIndex } from '@/routes/user-management'
+import { index as householdIndex, create as householdCreate, available as householdAvailable } from '../routes/household'
+import { index as userManagementIndex } from '../routes/user-management'
 
 const page = usePage()
-const user = computed(() => page.props.auth.user)
+const user = computed(() => (page.props.auth as any)?.user)
 const currentHousehold = computed(() => user.value?.household)
 
 // Por enquanto, mostra apenas o lar atual
 // A funcionalidade completa de múltiplos lares pode ser expandida depois
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const availableHouseholds = computed(() => {
     if (currentHousehold.value) {
         return [currentHousehold.value]

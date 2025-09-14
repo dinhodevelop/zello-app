@@ -5,8 +5,9 @@ import { Head, Link } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Edit, ArrowLeft, Trash2, User as UserIcon, UserCheck } from 'lucide-vue-next';
+// import { Separator } from '@/components/ui/separator'; // Removido - não utilizado
+import { Edit, ArrowLeft, User as UserIcon, UserCheck } from 'lucide-vue-next';
+// Trash2 removido - não utilizado
 
 interface Despesa {
     id: number;

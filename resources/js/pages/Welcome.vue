@@ -2,6 +2,7 @@
 import { dashboard, login, register } from '../routes';
 import { Head, Link } from '@inertiajs/vue3';
 import Icon from '../components/Icon.vue';
+import { Coins, ListChecks, Home, CheckCircle } from 'lucide-vue-next';
 </script>
 
 <template>
@@ -120,7 +121,7 @@ import Icon from '../components/Icon.vue';
                                             <Icon name="dollar-sign" class="h-8 w-8 text-green-600" />
                                         </div>
                                         <div class="flex h-20 w-20 items-center justify-center rounded-full bg-purple-500/10">
-                                            <Icon name="check-circle" class="h-8 w-8 text-purple-600" />
+                                            <CheckCircle name="check-circle" class="h-8 w-8 text-purple-600" />
                                         </div>
                                     </div>
                                 </div>
@@ -132,6 +133,171 @@ import Icon from '../components/Icon.vue';
                             <div class="absolute top-1/2 -left-2 h-4 w-4 rounded-full bg-green-400 shadow-lg"></div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="relative px-6 py-16 lg:px-8 lg:py-20">
+            <div class="mx-auto max-w-7xl">
+                <!-- Section Header -->
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold tracking-tight text-[#1b1b18] sm:text-4xl dark:text-[#EDEDEC]">
+                        Funcionalidades que 
+                        <span class="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent dark:from-green-500 dark:to-emerald-400">
+                            transformam
+                        </span> 
+                        sua família
+                    </h2>
+                    <p class="mt-4 text-lg text-[#706f6c] dark:text-[#A1A09A]">
+                        Descubra como o Zello pode simplificar a organização da sua casa
+                    </p>
+                </div>
+
+                <!-- Features Grid -->
+                <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <!-- Card 1: Controle Financeiro -->
+                    <div class="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 dark:bg-[#161615]">
+                        <!-- Background Gradient -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-50 dark:from-green-900/20 dark:to-emerald-900/20"></div>
+                        
+                        <!-- Content -->
+                        <div class="relative">
+                            <!-- Icon -->
+                            <div class="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-green-600 to-emerald-500 shadow-lg">
+                                <Coins name="dollar-sign" class="h-8 w-8 text-white" />
+                            </div>
+                            
+                            <!-- Title -->
+                            <h3 class="mb-4 text-xl font-bold text-[#1b1b18] dark:text-[#EDEDEC]">
+                                💰 Controle Financeiro
+                            </h3>
+                            
+                            <!-- Description -->
+                            <p class="mb-6 text-[#706f6c] dark:text-[#A1A09A]">
+                                Acompanhe receitas, despesas e metas de toda a família. Tenha transparência total sobre as finanças do lar e tome decisões inteligentes juntos.
+                            </p>
+                            
+                            <!-- Features List -->
+                            <ul class="space-y-2 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                <li class="flex items-center">
+                                    <Icon name="check" class="mr-2 h-4 w-4 text-green-600" />
+                                    Controle de receitas e despesas
+                                </li>
+                                <li class="flex items-center">
+                                    <Icon name="check" class="mr-2 h-4 w-4 text-green-600" />
+                                    Metas financeiras familiares
+                                </li>
+                                <li class="flex items-center">
+                                    <Icon name="check" class="mr-2 h-4 w-4 text-green-600" />
+                                    Relatórios detalhados
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Hover Effect -->
+                        <div class="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-300 group-hover:border-green-200 dark:group-hover:border-green-800"></div>
+                    </div>
+
+                    <!-- Card 2: Listas Inteligentes -->
+                    <div class="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 dark:bg-[#161615]">
+                        <!-- Background Gradient -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-50 dark:from-blue-900/20 dark:to-indigo-900/20"></div>
+                        
+                        <!-- Content -->
+                        <div class="relative">
+                            <!-- Icon -->
+                            <div class="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-500 shadow-lg">
+                                <ListChecks name="list-checks" class="h-8 w-8 text-white" />
+                            </div>
+                            
+                            <!-- Title -->
+                            <h3 class="mb-4 text-xl font-bold text-[#1b1b18] dark:text-[#EDEDEC]">
+                                📝 Listas Inteligentes
+                            </h3>
+                            
+                            <!-- Description -->
+                            <p class="mb-6 text-[#706f6c] dark:text-[#A1A09A]">
+                                Crie listas de compras colaborativas e nunca esqueça nada. Organize compras por categoria e compartilhe com toda a família.
+                            </p>
+                            
+                            <!-- Features List -->
+                            <ul class="space-y-2 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                <li class="flex items-center">
+                                    <Icon name="check" class="mr-2 h-4 w-4 text-blue-600" />
+                                    Listas colaborativas em tempo real
+                                </li>
+                                <li class="flex items-center">
+                                    <Icon name="check" class="mr-2 h-4 w-4 text-blue-600" />
+                                    Categorização automática
+                                </li>
+                                <li class="flex items-center">
+                                    <Icon name="check" class="mr-2 h-4 w-4 text-blue-600" />
+                                    Histórico de compras
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Hover Effect -->
+                        <div class="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-300 group-hover:border-blue-200 dark:group-hover:border-blue-800"></div>
+                    </div>
+
+                    <!-- Card 3: Gestão Doméstica -->
+                    <div class="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 dark:bg-[#161615] md:col-span-2 lg:col-span-1">
+                        <!-- Background Gradient -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 opacity-50 dark:from-purple-900/20 dark:to-pink-900/20"></div>
+                        
+                        <!-- Content -->
+                        <div class="relative">
+                            <!-- Icon -->
+                            <div class="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-pink-500 shadow-lg">
+                                <Home name="home" class="h-8 w-8 text-white" />
+                            </div>
+                            
+                            <!-- Title -->
+                            <h3 class="mb-4 text-xl font-bold text-[#1b1b18] dark:text-[#EDEDEC]">
+                                🏠 Gestão Doméstica
+                            </h3>
+                            
+                            <!-- Description -->
+                            <p class="mb-6 text-[#706f6c] dark:text-[#A1A09A]">
+                                Organize tarefas da casa e demandas familiares. Distribua responsabilidades e mantenha a casa sempre em ordem.
+                            </p>
+                            
+                            <!-- Features List -->
+                            <ul class="space-y-2 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                <li class="flex items-center">
+                                    <Icon name="check" class="mr-2 h-4 w-4 text-purple-600" />
+                                    Distribuição de tarefas
+                                </li>
+                                <li class="flex items-center">
+                                    <Icon name="check" class="mr-2 h-4 w-4 text-purple-600" />
+                                    Calendário familiar
+                                </li>
+                                <li class="flex items-center">
+                                    <Icon name="check" class="mr-2 h-4 w-4 text-purple-600" />
+                                    Lembretes automáticos
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Hover Effect -->
+                        <div class="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-300 group-hover:border-purple-200 dark:group-hover:border-purple-800"></div>
+                    </div>
+                </div>
+
+                <!-- Bottom CTA -->
+                <div class="mt-16 text-center">
+                    <p class="mb-6 text-lg text-[#706f6c] dark:text-[#A1A09A]">
+                        Pronto para experimentar todas essas funcionalidades?
+                    </p>
+                    <Link
+                        :href="register()"
+                        class="inline-flex items-center justify-center rounded-lg bg-green-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:bg-green-700 hover:shadow-xl hover:scale-105 dark:bg-green-500 dark:hover:bg-green-600"
+                    >
+                        <Icon name="arrow-right" class="mr-2 h-5 w-5" />
+                        Começar Agora
+                    </Link>
                 </div>
             </div>
         </section>

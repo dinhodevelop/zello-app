@@ -215,7 +215,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { router, Link, usePage } from '@inertiajs/vue3'
+import { router, Link } from '@inertiajs/vue3'
+// usePage removido - não utilizado
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

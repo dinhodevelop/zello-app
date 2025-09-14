@@ -104,7 +104,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useForm, usePage, Link, router } from '@inertiajs/vue3'
+import { usePage, Link, router } from '@inertiajs/vue3'
+// useForm removido - não utilizado
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Home, Eye, Plus } from 'lucide-vue-next'
@@ -116,6 +117,7 @@ interface Household {
     users: Array<{ id: number; name: string }>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps<{
     households: Household[]
 }>()
